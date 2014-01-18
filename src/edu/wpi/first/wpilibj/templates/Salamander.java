@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,45 +24,51 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  */
 public class Salamander extends SimpleRobot {
     
-//Jags
-  Jaguar leftDrive1 = new Jaguar(1);
-  Jaguar rightDrive1 = new Jaguar(2);
-//Joystick
-  Joystick rightJoy = new Joystick(1);
-  Joystick leftJoy = new Joystick(2);
-//Buttons
-  JoystickButton rightTrigger = new JoystickButton(rightJoy,1);
-  
-  
+    //Jags
+      Jaguar leftDrive1 = new Jaguar(1);
+      Jaguar rightDrive1 = new Jaguar(2);
+    //Joystick
+      Joystick rightJoy = new Joystick(1);
+      Joystick leftJoy = new Joystick(2);
+    //Buttons
+      JoystickButton rightTrigger = new JoystickButton(rightJoy,1);
+
+
     
     
-    /**
-     * This function is called once each time the robot enters autonomous mode.
-     */
-    public void autonomous() {
-        leftDrive1.set(0.3);
-        rightDrive1.set((0.3)*(-1));
-        Timer.delay(0.5);
-        leftDrive1.set(0);
-        rightDrive1.set(0);
-        
-        
-    }
-
-    /**
-     * This function is called once each time the robot enters operator control.
-     */
-    public void operatorControl() {
-
-        while(isEnabled() && isOperatorControl())
+    public void autonomous() 
         {
-            Timer.delay(0.1);
-            leftDrive1.set((leftJoy.getY()*.75));
-            rightDrive1.set((rightJoy.getY()*.75)*(-1));
-  
-            
-            
+        SmartDashboard.putString("Mode:", " Auto");
+        leftDrive1.set((0.2)*(-1));
+        rightDrive1.set((0.2));
+        Timer.delay(1);
+        leftDrive1.set(0);
+        rightDrive1.set(0);  
         }
-        
-    }
+    
+    
+    
+    public void operatorControl() 
+        {
+           SmartDashboard.putString("Mode:"," Enabled");
+           while(isEnabled() && isOperatorControl())
+           {
+               Timer.delay(0.1);
+
+               leftDrive1.set((leftJoy.getY()*.75));
+               rightDrive1.set((rightJoy.getY()*.75)*(-1));
+           }
+
+       }
+    
+    
+    
+    
+        public void disabled() 
+        {
+        SmartDashboard.putString("Mode:"," Disabled");
+        //Print Disabled to dashboard
+        }
+     
+     
 }
