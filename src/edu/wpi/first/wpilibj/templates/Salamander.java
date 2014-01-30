@@ -23,16 +23,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Salamander extends SimpleRobot {
-    
+     boolean gearboxstate = false, b, a, prevalue = false;
     //Jags
-      Jaguar leftDrive1 = new Jaguar(1);
-      Jaguar rightDrive1 = new Jaguar(2);
+      Jaguar leftDrive1 = new Jaguar(2);
+      Jaguar rightDrive1 = new Jaguar(1);
     //Joystick
       Joystick rightJoy = new Joystick(1);
       Joystick leftJoy = new Joystick(2);
     //Buttons
-      JoystickButton rightTrigger = new JoystickButton(rightJoy,1);
-
+      
+      JoystickButton leftTrig = new JoystickButton(leftJoy,1);    
+      JoystickButton rightTrig = new JoystickButton(rightJoy,1);
+    //int
+      double speedVal =0.5;
 
     
     
@@ -55,8 +58,45 @@ public class Salamander extends SimpleRobot {
            {
                Timer.delay(0.1);
 
-               leftDrive1.set((leftJoy.getY()*.75));
-               rightDrive1.set((rightJoy.getY()*.75)*(-1));
+               leftDrive1.set((leftJoy.getY())*(speedVal)*(-1));
+               rightDrive1.set((rightJoy.getY())*(speedVal));
+               
+               
+               
+               
+ //Software Gearbox
+                    if (leftTrig.get() && rightTrig.get())
+                      {
+                          a = true;          // b if both buttons pressed
+                      } 
+                    else    
+                      {
+                          a = false;
+                      }
+                    if (!prevalue && a){
+                        gearboxstate=!gearboxstate;
+                    }
+                    if (gearboxstate){
+                        SmartDashboard.putString("Gear:", " HIGH");
+                        speedVal =1;
+                    } else {
+                        SmartDashboard.putString("Gear:", " LOW");
+                       speedVal =0.5;
+                    }
+                    if (a){
+                        prevalue = true;
+                    } else {
+                        prevalue = false;
+                    }
+               
+             
+               
+               
+               
+               
+               
+               
+               
            }
 
        }
@@ -67,6 +107,7 @@ public class Salamander extends SimpleRobot {
         public void disabled() 
         {
         SmartDashboard.putString("Mode:"," Disabled");
+        speedVal =0.5;
         //Print Disabled to dashboard
         }
      
