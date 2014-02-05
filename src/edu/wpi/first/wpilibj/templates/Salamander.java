@@ -30,6 +30,7 @@ public class Salamander extends SimpleRobot {
     Joystick driveStick = new Joystick(1);
     JoystickButton retractButton = new JoystickButton(controlStick, 2);
     JoystickButton expandButton = new JoystickButton(controlStick, 3);
+    JoystickButton fauxGyroValB = new JoystickButton(controlStick, 6);
     
     //</editor-fold>
     
@@ -153,6 +154,38 @@ public class Salamander extends SimpleRobot {
     }
 
     public void test() {
-        
+        double gyroStatis;
+        boolean fauxGyroVal, fauxGyroPreval = false;
+        compressor.stop();
+        while(isTest() && isEnabled()) {
+            double z = driveStick.getZ()*-1;
+            if (Math.abs(z) < 0.5) {
+                z = 0;
+            } else if (z > 0) {
+                z -= 0.5;
+            } else {
+                z += 0.5;
+            }
+            
+            fauxGyroVal = fauxGyroValB.get();
+
+            if (fauxGyroVal && !fauxGyroPreval) {                                          //
+                gyroStatis = itsAGyro.getAngle();
+            } else if (!fauxGyroVal && fauxGyroPreval) {
+                gyroStatis = controlStick.getThrottle();
+            } else {
+                gyroStatis = 0;
+            }
+            
+            myDrive.mecanumDrive_Cartesian(driveStick.getX(), z, driveStick.getY()*-1, gyroStatis);
+            
+            SmartDashboard.putString("Gyro:", " " + gyroStatis);
+            if (fauxGyroVal) {
+                SmartDashboard.putString("we are lying about the gyro", " yes");
+            } else {
+                SmartDashboard.putString("we are lying about the gyro", " no");
+            }
+            
+        }
     }
 }
