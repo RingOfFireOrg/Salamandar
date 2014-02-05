@@ -25,33 +25,37 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Salamander extends SimpleRobot {
 
-    //Joysticks
+    //<editor-fold defaultstate="closed" desc="Controls">
     Joystick controlStick = new Joystick(2);
     Joystick driveStick = new Joystick(1);
     JoystickButton retractButton = new JoystickButton(controlStick, 2);
     JoystickButton expandButton = new JoystickButton(controlStick, 3);
-
-    //Drive
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="closed" desc="Drive System">
     RobotDrive myDrive = new RobotDrive(1, 2, 3, 4);
-
-    //Gyro
     Gyro itsAGyro = new Gyro(1);
     
-    //Motors
-    Jaguar wis = new Jaguar(5);
+    //</editor-fold>
 
-    //Pneumatics
-    //DigitalInput pressureSwitch = new DigitalInput(1);                          //the digital input for the pressure switch on the pneumatics board
+    //<editor-fold defaultstate="closed" desc="Pneumatics">                     //the digital input for the pressure switch on the pneumatics board
     Compressor compressor = new Compressor(1, 1);                               //the compressor which charges air for the storage tanks
     MySolenoid Kicker = new MySolenoid(1, 2, 3);                                //an arbitrary piston that uses the MySolenoid system
-    //Relay compressorRelay = new Relay(1);
-
-    /**
-     * This function is called once each time the robot enters autonomous mode.
-     */
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="closed" desc="Motors">
+    Jaguar wis = new Jaguar(5);
+    
+    //</editor-fold>
+    
+    //rampmotor variables
+    double req, cur;
+    
     public double rampmotor(double req, double cur) { //init variables Requested speed and Current speed
         double error = Math.abs(req - cur); //sets variable error to Requested speed minus Current speed
-        double output = 0.0;
+        double output;
 
         if (error >= 0.1) {
             output = ((0.1) * (req - cur));
@@ -67,12 +71,9 @@ public class Salamander extends SimpleRobot {
         myDrive.mecanumDrive_Cartesian(0, 0, 0, 0);                             //do not move
     }
 
-    /**
-     * This function is called once each time the robot enters operator control.
-     */
     public void operatorControl() {
         //Inintial Compressor Values
-        boolean pressureSwitchVal = true, pressureSwitchPreval = true;
+        boolean pressureSwitchVal, pressureSwitchPreval = true;
         compressor.start();
         //compressorRelay.set(Relay.Value.kForward);
         //Solenoid system value
@@ -86,7 +87,7 @@ public class Salamander extends SimpleRobot {
         while (isOperatorControl() && isEnabled()) {
             Timer.delay(0.01);
             
-            
+            //<editor-fold defaultstate="open" desc="Drive System">    
             double z = driveStick.getZ()*-1;
             if (Math.abs(z) < 0.5) {
                 z = 0;
@@ -97,7 +98,9 @@ public class Salamander extends SimpleRobot {
             }
             gyroStatis = itsAGyro.getAngle();
             myDrive.mecanumDrive_Cartesian(driveStick.getX(), z, driveStick.getY()*-1, gyroStatis);
-
+            //</editor-fold>
+            
+            //<editor-fold defaultstate="open" desc="Pneumatics">
             //Compressor
             pressureSwitchVal = compressor.getPressureSwitchValue();
 
@@ -111,11 +114,11 @@ public class Salamander extends SimpleRobot {
 
             pressureSwitchPreval = pressureSwitchVal;
 
-//Solenoid Actuating
+            //Solenoid Actuating
             retractButtonVal = retractButton.get();
             expandButtonVal = expandButton.get();
 
-//determines the desired state of the system based on buttons
+            //determines the desired state of the system based on buttons
             if (retractButtonVal && !expandButtonVal) {
                 retractedState = true;
                 extendedState = false;
@@ -128,27 +131,28 @@ public class Salamander extends SimpleRobot {
                 SmartDashboard.putString("Kicker:", " Both bottons pressed");
             }
 
-//Extends and Retracts the piston only when not previously extended or retracted
+            //Extends and Retracts the piston only when not previously extended or retracted
             if (retractedState && !pistonPrevalueR) {
                 Kicker.retract();
             } else if (extendedState && !pistonPrevalueE) {
                 Kicker.extend();
             } else {
-    //nothing
+                //nothing
             }
 
             pistonPrevalueE = extendedState;
             pistonPrevalueR = retractedState;
+            //</editor-fold>
+            
+            //<editor-fold defaultstate="open" desc="Motors">
             wisVal = rampmotor(controlStick.getThrottle(), wisVal);
             wis.set(wisVal);
+            //</editor-fold>
         }
 
     }
 
-    /**
-     * This function is called once each time the robot enters test mode.
-     */
     public void test() {
-
+        
     }
 }
