@@ -85,6 +85,8 @@ public class Salamander extends SimpleRobot {
         
         double wisVal = 0;
 
+        myDrive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
+        myDrive.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
         while (isOperatorControl() && isEnabled()) {
             Timer.delay(0.01);
             
@@ -98,7 +100,7 @@ public class Salamander extends SimpleRobot {
                 z += 0.5;
             }
             gyroStatis = itsAGyro.getAngle();
-            myDrive.mecanumDrive_Cartesian(driveStick.getX(), z, driveStick.getY()*-1, gyroStatis);
+            myDrive.mecanumDrive_Cartesian(driveStick.getX(), driveStick.getY(), -z, 0);
             //</editor-fold>
             
             //<editor-fold defaultstate="open" desc="Pneumatics">
