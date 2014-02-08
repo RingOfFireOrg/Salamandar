@@ -42,8 +42,8 @@ public class Salamander extends SimpleRobot {
 
     //<editor-fold defaultstate="closed" desc="Pneumatics">                     //the digital input for the pressure switch on the pneumatics board
     Compressor compressor = new Compressor(1, 1);                               //the compressor which charges air for the storage tanks
-    MySolenoid Kicker = new MySolenoid(1, 2, 3);                                //an arbitrary piston that uses the MySolenoid system
-    
+    MySolenoid wisTilt = new MySolenoid(1, 1, 2);                                //an arbitrary piston that uses the MySolenoid system
+    MySolenoid plowGrab = new MySolenoid(1, 3, 4);
     //</editor-fold>
     
     //<editor-fold defaultstate="closed" desc="Motors">
@@ -77,10 +77,13 @@ public class Salamander extends SimpleRobot {
         boolean pressureSwitchVal, pressureSwitchPreval = true;
         compressor.start();
         //compressorRelay.set(Relay.Value.kForward);
-        //Solenoid system value
-        boolean retractedState = true, extendedState = false, retractButtonVal, expandButtonVal;
-        boolean pistonPrevalueR = true, pistonPrevalueE = false;
+        //Solenoid system values
+        boolean wisRetractedState = true, wisExtendedState = false, wisRetractButtonVal, wisExpandButtonVal;
+        boolean wisPrevalueR = true, wisPrevalueE = false;
 
+        boolean plowRetractedState = true, plowExtendedState = false, plowRetractButtonVal, plowExpandButtonVal;
+        boolean plowPrevalueR = true, plowPrevalueE = false;
+        
         double gyroStatis;
         
         double wisVal = 0;
@@ -118,33 +121,64 @@ public class Salamander extends SimpleRobot {
             pressureSwitchPreval = pressureSwitchVal;
 
             //Solenoid Actuating
-            retractButtonVal = retractButton.get();
-            expandButtonVal = expandButton.get();
+            //Wis
+            wisRetractButtonVal = retractButton.get();
+            wisExpandButtonVal = expandButton.get();
 
             //determines the desired state of the system based on buttons
-            if (retractButtonVal && !expandButtonVal) {
-                retractedState = true;
-                extendedState = false;
+            if (wisRetractButtonVal && !wisExpandButtonVal) {
+                wisRetractedState = true;
+                wisExtendedState = false;
                 SmartDashboard.putString("Kicker:", " Retracted");
-            } else if (!retractButtonVal && expandButtonVal) {
-                retractedState = false;
-                extendedState = true;
+            } else if (!wisRetractButtonVal && wisExpandButtonVal) {
+                wisRetractedState = false;
+                wisExtendedState = true;
                 SmartDashboard.putString("Kicker:", " Extended");
-            } else if (retractButtonVal && expandButtonVal) {
+            } else if (wisRetractButtonVal && wisExpandButtonVal) {
                 SmartDashboard.putString("Kicker:", " Both bottons pressed");
             }
 
             //Extends and Retracts the piston only when not previously extended or retracted
-            if (retractedState && !pistonPrevalueR) {
-                Kicker.retract();
-            } else if (extendedState && !pistonPrevalueE) {
-                Kicker.extend();
+            if (wisRetractedState && !wisPrevalueR) {
+                wisTilt.retract();
+            } else if (wisExtendedState && !wisPrevalueE) {
+                wisTilt.extend();
             } else {
                 //nothing
             }
 
-            pistonPrevalueE = extendedState;
-            pistonPrevalueR = retractedState;
+            wisPrevalueE = wisExtendedState;
+            wisPrevalueR = wisRetractedState;
+            
+            
+            //Plow
+            plowRetractButtonVal = retractButton.get();
+            plowExpandButtonVal = expandButton.get();
+
+            //determines the desired state of the system based on buttons
+            if (plowRetractButtonVal && !plowExpandButtonVal) {
+                plowRetractedState = true;
+                plowExtendedState = false;
+                SmartDashboard.putString("Kicker:", " Retracted");
+            } else if (!plowRetractButtonVal && plowExpandButtonVal) {
+                plowRetractedState = false;
+                plowExtendedState = true;
+                SmartDashboard.putString("Kicker:", " Extended");
+            } else if (plowRetractButtonVal && plowExpandButtonVal) {
+                SmartDashboard.putString("Kicker:", " Both bottons pressed");
+            }
+
+            //Extends and Retracts the piston only when not previously extended or retracted
+            if (plowRetractedState && !plowPrevalueR) {
+                plowGrab.retract();
+            } else if (plowExtendedState && !plowPrevalueE) {
+                plowGrab.extend();
+            } else {
+                //nothing
+            }
+
+            plowPrevalueE = plowExtendedState;
+            plowPrevalueR = plowRetractedState;
             //</editor-fold>
             
             //<editor-fold defaultstate="open" desc="Motors">
