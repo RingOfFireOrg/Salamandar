@@ -1,7 +1,7 @@
 #################
 ## Eclipse
 #################
-
+nbproject/private/
 *.pydevproject
 .project
 .metadata
