@@ -1,6 +1,7 @@
 #################
 ## Eclipse
 #################
+
 nbproject/private/
 *.pydevproject
 .project
